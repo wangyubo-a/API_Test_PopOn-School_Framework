@@ -47,7 +47,7 @@ class CheckUtils:
 
     def none_check(self):
         logger.info('断言类型为无或期望结果无数据，检测通过')
-        return
+        return self.pass_result
 
     def __key_check(self, actual_result, check_data):
         key_list = check_data.split(',')
