@@ -1,5 +1,11 @@
+# -*- coding:UTF-8 -*-
 import unittest
 import os
+import sys
+
+sys_path = os.path.join(os.path.dirname(__file__), '..')
+sys.path.append(sys_path)
+
 from utils import HTMLTestReportCN
 from utils.config_utils import local_config
 from nb_log import LogManager
@@ -31,3 +37,4 @@ runner = HTMLTestReportCN.HTMLTestRunner(stream=report_html_obj,
 logger.info('接口自动化测试开始执行')
 runner.run(load_testcase())
 report_html_obj.close()
+os.system('cp -f %s %s/接口自动化测试报告.html' % (report_html_path, sys.argv[1]))

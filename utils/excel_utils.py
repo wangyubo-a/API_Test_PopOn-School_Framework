@@ -1,3 +1,4 @@
+# -*- coding:UTF-8 -*-
 import xlrd3
 import os
 

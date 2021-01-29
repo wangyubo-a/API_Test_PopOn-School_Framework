@@ -1,3 +1,4 @@
+# -*- coding:UTF-8 -*-
 import requests
 import time
 from utils.config_utils import local_config
@@ -136,7 +137,6 @@ class RequestsUtils:
                 logger.info('%s 接口开始将头部信息里的变量替换成值--开始执行' % requests_info['接口名称'])
                 requests_info['请求头部信息'] = requests_info['请求头部信息'].replace(variable,
                                                                           '%s' % self.tmp_variables[variable[2:-1]])
-                logger.error(requests_info['请求头部信息'])
                 logger.info('%s 接口开始将头部信息里的变量替换成值--执行结束' % requests_info['接口名称'])
             get_variable_list = re.findall('\\${\w+}', requests_info['请求参数(get)'])
             for variable in get_variable_list:
@@ -151,7 +151,6 @@ class RequestsUtils:
                 requests_info['请求参数(post)'] = requests_info['请求参数(post)'].replace(variable,
                                                                                   '%s' % self.tmp_variables[
                                                                                       variable[2:-1]])
-                logger.error(requests_info['请求参数(post)'])
                 logger.info('%s 接口开始将请求参数(post)里的变量替换成值--执行结束' % requests_info['接口名称'])
             if requests_info['请求头部信息'] != '':
                 if requests_info['请求参数(get)'] != '':
@@ -197,7 +196,6 @@ class RequestsUtils:
                         logger.info('%s 接口开始调用--无post请求参数 ,(--post请求)' % requests_info['接口名称'])
                         response = self.session.post(url=url)
             response.encoding = response.apparent_encoding
-            logger.error(response.text)
             for data in range(len(requests_info['取值方式'].split(','))):
                 if requests_info['取值方式'].split(',')[data] == 'jsonpath取值':
                     logger.info('%s 接口开始使用jsonpath取值' % requests_info['接口名称'])
@@ -215,13 +213,11 @@ class RequestsUtils:
                     self.tmp_variables[requests_info['取值变量'].split(',')[data]] = value
                     logger.info('%s 接口使用响应头取值完毕，值为：%s' % (requests_info['接口名称'], value))
                 elif requests_info['取值方式'].split(',')[data] == 'sta_time':
-                    logger.error(int(time.time()) + int(requests_info['取值代码'].split(',')[data]))
                     logger.info('%s 接口开始使用sta_time取值' % requests_info['接口名称'])
                     value = (int(time.time()) + int(requests_info['取值代码'].split(',')[data])) * 1000
                     self.tmp_variables[requests_info['取值变量'].split(',')[data]] = value
                     logger.info('%s 接口sta_time取值完毕，值为：%s' % (requests_info['接口名称'], value))
             result = CheckUtils(response).run_check(requests_info['断言类型'], requests_info['期望结果'])
-            print(result)
         except ProxyError as e:
             result = {'code': 3, 'message': '调用接口 [%s] 时发生代理异常,异常原因：%s' % (requests_info['接口名称'], e.__str__()),
                       'check_result': False}
