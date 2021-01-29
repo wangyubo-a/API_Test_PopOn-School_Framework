@@ -28,7 +28,7 @@ class RequestsUtils:
             for variable in post_variable_list:
                 logger.info('%s 接口开始将请求参数(post)里的变量替换成值--开始执行' % requests_info['接口名称'])
                 requests_info['请求参数(post)'] = requests_info['请求参数(post)'].replace(variable,
-                                                                                  '"%s"' % self.tmp_variables[
+                                                                                  '%s' % self.tmp_variables[
                                                                                       variable[2:-1]])
                 logger.info('%s 接口开始将请求参数(post)里的变量替换成值--执行结束' % requests_info['接口名称'])
             headers_variable_list = re.findall('\\${\w+}', requests_info['请求头部信息'])
@@ -36,13 +36,13 @@ class RequestsUtils:
                 # 将接口中的变量替换成值  replace为替换
                 logger.info('%s 接口开始将头部信息里的变量替换成值--开始执行' % requests_info['接口名称'])
                 requests_info['请求头部信息'] = requests_info['请求头部信息'].replace(variable,
-                                                                          '"%s"' % self.tmp_variables[variable[2:-1]])
+                                                                          '%s' % self.tmp_variables[variable[2:-1]])
                 logger.info('%s 接口开始将头部信息里的变量替换成值--执行结束' % requests_info['接口名称'])
             get_variable_list = re.findall('\\${\w+}', requests_info['请求参数(get)'])
             for variable in get_variable_list:
                 logger.info('%s 接口开始将请求参数(get)里的变量替换成值--开始执行' % requests_info['接口名称'])
                 requests_info['请求参数(get)'] = requests_info['请求参数(get)'].replace(variable,
-                                                                                '"%s"' % self.tmp_variables[
+                                                                                '%s' % self.tmp_variables[
                                                                                     variable[2:-1]])
                 logger.info('%s 接口开始将请求参数(get)里的变量替换成值--执行结束' % requests_info['接口名称'])
             if requests_info['请求头部信息'] != '':
@@ -104,7 +104,6 @@ class RequestsUtils:
 
     # 封装post方法
     def __post(self, requests_info):
-        global response
         try:
             logger.info('%s 接口调用post请求 --开始执行' % requests_info['接口名称'])
             url = self.hosts + requests_info['请求地址']
@@ -114,43 +113,69 @@ class RequestsUtils:
                 # 将头部信息里的变量替换成值
                 logger.info('%s 接口开始将头部信息里的变量替换成值--开始执行' % requests_info['接口名称'])
                 requests_info['请求头部信息'] = requests_info['请求头部信息'].replace(variable,
-                                                                          '"%s"' % self.tmp_variables[variable[2:-1]])
+                                                                          '%s' % self.tmp_variables[variable[2:-1]])
+                logger.error(requests_info['请求头部信息'])
                 logger.info('%s 接口开始将头部信息里的变量替换成值--执行结束' % requests_info['接口名称'])
             get_variable_list = re.findall('\\${\w+}', requests_info['请求参数(get)'])
             for variable in get_variable_list:
                 logger.info('%s 接口开始将请求参数(get)里的变量替换成值--开始执行' % requests_info['接口名称'])
                 requests_info['请求参数(get)'] = requests_info['请求参数(get)'].replace(variable,
-                                                                                '"%s"' % self.tmp_variables[
+                                                                                '%s' % self.tmp_variables[
                                                                                     variable[2:-1]])
                 logger.info('%s 接口开始将请求参数(get)里的变量替换成值--执行结束' % requests_info['接口名称'])
             post_variable_list = re.findall('\\${\w+}', requests_info['请求参数(post)'])
             for variable in post_variable_list:
                 logger.info('%s 接口开始将请求参数(post)里的变量替换成值--开始执行' % requests_info['接口名称'])
                 requests_info['请求参数(post)'] = requests_info['请求参数(post)'].replace(variable,
-                                                                                  '"%s"' % self.tmp_variables[
+                                                                                  '%s' % self.tmp_variables[
                                                                                       variable[2:-1]])
+                logger.error(requests_info['请求参数(post)'])
                 logger.info('%s 接口开始将请求参数(post)里的变量替换成值--执行结束' % requests_info['接口名称'])
             if requests_info['请求头部信息'] != '':
                 if requests_info['请求参数(get)'] != '':
-                    logger.info('%s 接口开始调用--带求头--带get请求参数 ,(--post请求)' % requests_info['接口名称'])
-                    response = self.session.post(url=url,
-                                                 headers=eval(requests_info['请求头部信息']),
-                                                 params=json.loads(requests_info['请求参数(get)']),
-                                                 data=json.loads(requests_info['请求参数(post)']))
+                    if requests_info['请求参数(post)'] != '':
+                        logger.info('%s 接口开始调用--带求头--带get请求参数--带post请求参数 ,(--post请求)' % requests_info['接口名称'])
+                        response = self.session.post(url=url,
+                                                     headers=eval(requests_info['请求头部信息']),
+                                                     params=json.loads(requests_info['请求参数(get)']),
+                                                     data=json.loads(requests_info['请求参数(post)']))
+                    else:
+                        logger.info('%s 接口开始调用--带求头--带get请求参数 ,(--post请求)' % requests_info['接口名称'])
+                        response = self.session.post(url=url,
+                                                     headers=eval(requests_info['请求头部信息']),
+                                                     params=json.loads(requests_info['请求参数(get)']))
                 else:
-                    logger.info('%s 接口开始调用--带请求头,(--post请求)' % requests_info['接口名称'])
-                    response = self.session.post(url=url,
-                                                 headers=eval(requests_info['请求头部信息']),
-                                                 data=json.loads(requests_info['请求参数(post)']))
-            elif requests_info['请求参数(get)'] != '':
-                logger.info('%s 接口开始调用--带get请求参数 ,(--post请求)' % requests_info['接口名称'])
-                response = self.session.post(url=url,
-                                             params=json.loads(requests_info['请求参数(get)']),
-                                             data=json.loads(requests_info['请求参数(post)']))
+                    if requests_info['请求参数(post)'] != '':
+                        logger.info('%s 接口开始调用--带请求头--带post请求参数,(--post请求)' % requests_info['接口名称'])
+                        response = self.session.post(url=url,
+                                                     headers=eval(requests_info['请求头部信息']),
+                                                     data=json.loads(requests_info['请求参数(post)']))
+                    else:
+                        logger.info('%s 接口开始调用--带求头-- ,(--post请求)' % requests_info['接口名称'])
+                        response = self.session.post(url=url,
+                                                     headers=eval(requests_info['请求头部信息']))
+
             else:
-                logger.info('%s 接口开始调用,(--post请求)' % requests_info['接口名称'])
-                response = self.session.post(url=url, data=json.loads(requests_info['请求参数(post)']))
+                if requests_info['请求参数(get)'] != '':
+                    if requests_info['请求参数(post)'] != '':
+                        logger.info('%s 接口开始调用--带get请求参数--带post请求参数 ,(--post请求)' % requests_info['接口名称'])
+                        response = self.session.post(url=url,
+                                                     params=json.loads(requests_info['请求参数(get)']),
+                                                     data=json.loads(requests_info['请求参数(post)']))
+                    else:
+                        logger.info('%s 接口开始调用--带get请求参数--,(--post请求)' % requests_info['接口名称'])
+                        response = self.session.post(url=url,
+                                                     params=json.loads(requests_info['请求参数(get)']))
+                else:
+                    if requests_info['请求参数(post)'] != '':
+                        logger.info('%s 接口开始调用--带post请求参数,(--post请求)' % requests_info['接口名称'])
+                        response = self.session.post(url=url,
+                                                     data=json.loads(requests_info['请求参数(post)']))
+                    else:
+                        logger.info('%s 接口开始调用--无post请求参数 ,(--post请求)' % requests_info['接口名称'])
+                        response = self.session.post(url=url)
             response.encoding = response.apparent_encoding
+            logger.error(response.text)
             for data in range(len(requests_info['取值方式'].split(','))):
                 if requests_info['取值方式'].split(',')[data] == 'jsonpath取值':
                     logger.info('%s 接口开始使用jsonpath取值' % requests_info['接口名称'])

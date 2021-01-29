@@ -49,7 +49,7 @@ class ExcelUtils:
             for col_num in range(self.get_column_count()):
                 row_dict[row_head[col_num]] = self.get_merge_cell_value(row_num, col_num)
             excel_lit.append(row_dict)
-        return excel_lit
+        return excel_lit 
 
 
 if __name__ == "__main__":
