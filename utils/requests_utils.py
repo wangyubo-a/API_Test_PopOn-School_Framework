@@ -1,6 +1,7 @@
 # -*- coding:UTF-8 -*-
 import requests
 import time
+import datetime
 from utils.config_utils import local_config
 import json
 import jsonpath
@@ -105,6 +106,17 @@ class RequestsUtils:
                     value = response.headers[requests_info['取值代码'].split(',')[data]]
                     self.tmp_variables[requests_info['取值变量'].split(',')[data]] = value
                     logger.info('%s 接口使用响应头取值完毕，值为：%s' % (requests_info['接口名称'], value))
+                elif requests_info['取值方式'].split(',')[data] == 'sta_time':
+                    logger.info('%s 接口开始使用sta_time取值' % requests_info['接口名称'])
+                    value = (int(time.time()) + int(requests_info['取值代码'].split(',')[data])) * 1000
+                    self.tmp_variables[requests_info['取值变量'].split(',')[data]] = value
+                    logger.info('%s 接口sta_time取值完毕，值为：%s' % (requests_info['接口名称'], value))
+                elif requests_info['取值方式'].split(',')[data] == 'datetime':
+                    logger.info('%s 接口开始使用datetime取值' % requests_info['接口名称'])
+                    now_time = datetime.datetime.now()
+                    value = (now_time+datetime.timedelta(hours=+int(requests_info['取值代码'].split(',')[data])))
+                    self.tmp_variables[requests_info['取值变量'].split(',')[data]] = value
+                    logger.info('%s 接口datetime取值完毕，值为：%s' % (requests_info['接口名称'], value))
             result = CheckUtils(response).run_check(requests_info['断言类型'], requests_info['期望结果'])
         except ProxyError as e:
             result = {'code': 3, 'message': '调用接口 [%s] 时发生代理异常,异常原因：%s' % (requests_info['接口名称'], e.__str__()),
@@ -168,6 +180,7 @@ class RequestsUtils:
                 else:
                     if requests_info['请求参数(post)'] != '':
                         logger.info('%s 接口开始调用--带请求头--带post请求参数,(--post请求)' % requests_info['接口名称'])
+                        logger.error(requests_info['请求参数(post)'])
                         response = self.session.post(url=url,
                                                      headers=eval(requests_info['请求头部信息']),
                                                      data=json.loads(requests_info['请求参数(post)']))
@@ -196,6 +209,7 @@ class RequestsUtils:
                         logger.info('%s 接口开始调用--无post请求参数 ,(--post请求)' % requests_info['接口名称'])
                         response = self.session.post(url=url)
             response.encoding = response.apparent_encoding
+            logger.info(response.text)
             for data in range(len(requests_info['取值方式'].split(','))):
                 if requests_info['取值方式'].split(',')[data] == 'jsonpath取值':
                     logger.info('%s 接口开始使用jsonpath取值' % requests_info['接口名称'])
@@ -217,7 +231,15 @@ class RequestsUtils:
                     value = (int(time.time()) + int(requests_info['取值代码'].split(',')[data])) * 1000
                     self.tmp_variables[requests_info['取值变量'].split(',')[data]] = value
                     logger.info('%s 接口sta_time取值完毕，值为：%s' % (requests_info['接口名称'], value))
+                elif requests_info['取值方式'].split(',')[data] == 'datetime':
+                    logger.info('%s 接口开始使用datetime取值' % requests_info['接口名称'])
+                    now_time = datetime.datetime.now()
+                    value = (now_time+datetime.timedelta(hours=+int(requests_info['取值代码'].split(',')[data]))).strftime('%Y-%m-%d %H:%M:%S')
+                    self.tmp_variables[requests_info['取值变量'].split(',')[data]] = value
+                    logger.info('%s 接口datetime取值完毕，值为：%s' % (requests_info['接口名称'], value))
             result = CheckUtils(response).run_check(requests_info['断言类型'], requests_info['期望结果'])
+            logger.error(result)
+            logger.error(self.tmp_variables)
         except ProxyError as e:
             result = {'code': 3, 'message': '调用接口 [%s] 时发生代理异常,异常原因：%s' % (requests_info['接口名称'], e.__str__()),
                       'check_result': False}
