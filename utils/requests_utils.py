@@ -180,7 +180,6 @@ class RequestsUtils:
                 else:
                     if requests_info['请求参数(post)'] != '':
                         logger.info('%s 接口开始调用--带请求头--带post请求参数,(--post请求)' % requests_info['接口名称'])
-                        logger.error(requests_info['请求参数(post)'])
                         response = self.session.post(url=url,
                                                      headers=eval(requests_info['请求头部信息']),
                                                      data=json.loads(requests_info['请求参数(post)']))
@@ -238,8 +237,6 @@ class RequestsUtils:
                     self.tmp_variables[requests_info['取值变量'].split(',')[data]] = value
                     logger.info('%s 接口datetime取值完毕，值为：%s' % (requests_info['接口名称'], value))
             result = CheckUtils(response).run_check(requests_info['断言类型'], requests_info['期望结果'])
-            logger.error(result)
-            logger.error(self.tmp_variables)
         except ProxyError as e:
             result = {'code': 3, 'message': '调用接口 [%s] 时发生代理异常,异常原因：%s' % (requests_info['接口名称'], e.__str__()),
                       'check_result': False}
@@ -254,7 +251,7 @@ class RequestsUtils:
             logger.error('调用接口 [%s] 时发生Request异常，异常原因是：%s' % (requests_info['接口名称'], e.__str__()))
         except Exception as e:
             result = {'code': 3, 'message': '调用接口 [%s] 时发生异常,异常原因：%s' % (requests_info['接口名称'], e.__str__()),
-                      'check_result': False, 'response_url': response.url}
+                      'check_result': False}
             logger.error(result)
             logger.error('调用接口 [%s] 时发生异常,异常原因：%s' % (requests_info['接口名称'], e.__str__()))
         logger.info('%s 接口调用post请求 --执行结束' % requests_info['接口名称'])
