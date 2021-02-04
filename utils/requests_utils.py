@@ -114,9 +114,21 @@ class RequestsUtils:
                 elif requests_info['取值方式'].split(',')[data] == 'datetime':
                     logger.info('%s 接口开始使用datetime取值' % requests_info['接口名称'])
                     now_time = datetime.datetime.now()
-                    value = (now_time+datetime.timedelta(hours=+int(requests_info['取值代码'].split(',')[data])))
+                    value = (now_time+datetime.timedelta(hours=+int(requests_info['取值代码'].split(',')[data]))).strftime('%Y-%m-%d %H:%M:%S')
                     self.tmp_variables[requests_info['取值变量'].split(',')[data]] = value
                     logger.info('%s 接口datetime取值完毕，值为：%s' % (requests_info['接口名称'], value))
+                elif requests_info['取值方式'].split(',')[data] == 'month_day':
+                    logger.info('%s 接口开始使用month_day取值' % requests_info['接口名称'])
+                    today = datetime.date.today()
+                    value = (today.replace(month=today.month+int(requests_info['取值代码'].split(',')[data]))).strftime('%Y-%m-%d')
+                    self.tmp_variables[requests_info['取值变量'].split(',')[data]] = value
+                    logger.info('%s 接口month_day取值完毕，值为：%s' % (requests_info['接口名称'], value))
+                elif requests_info['取值方式'].split(',')[data] == 'month_time':
+                    logger.info('%s 接口开始使用month_time取值' % requests_info['接口名称'])
+                    today = datetime.date.today()
+                    value = (today.replace(month=today.month+int(requests_info['取值代码'].split(',')[data]))).strftime('%Y-%m-%d')
+                    self.tmp_variables[requests_info['取值变量'].split(',')[data]] = value
+                    logger.info('%s 接口month_time取值完毕，值为：%s' % (requests_info['接口名称'], value))
             result = CheckUtils(response).run_check(requests_info['断言类型'], requests_info['期望结果'])
         except ProxyError as e:
             result = {'code': 3, 'message': '调用接口 [%s] 时发生代理异常,异常原因：%s' % (requests_info['接口名称'], e.__str__()),
@@ -236,6 +248,18 @@ class RequestsUtils:
                     value = (now_time+datetime.timedelta(hours=+int(requests_info['取值代码'].split(',')[data]))).strftime('%Y-%m-%d %H:%M:%S')
                     self.tmp_variables[requests_info['取值变量'].split(',')[data]] = value
                     logger.info('%s 接口datetime取值完毕，值为：%s' % (requests_info['接口名称'], value))
+                elif requests_info['取值方式'].split(',')[data] == 'month_day':
+                    logger.info('%s 接口开始使用month_day取值' % requests_info['接口名称'])
+                    today = datetime.date.today()
+                    value = (today.replace(month=today.month+int(requests_info['取值代码'].split(',')[data]))).strftime('%Y-%m-%d')
+                    self.tmp_variables[requests_info['取值变量'].split(',')[data]] = value
+                    logger.info('%s 接口month_day取值完毕，值为：%s' % (requests_info['接口名称'], value))
+                elif requests_info['取值方式'].split(',')[data] == 'month_time':
+                    logger.info('%s 接口开始使用month_time取值' % requests_info['接口名称'])
+                    today = datetime.date.today()
+                    value = (today.replace(month=today.month+int(requests_info['取值代码'].split(',')[data]))).strftime('%Y-%m')
+                    self.tmp_variables[requests_info['取值变量'].split(',')[data]] = value
+                    logger.info('%s 接口month_time取值完毕，值为：%s' % (requests_info['接口名称'], value))
             result = CheckUtils(response).run_check(requests_info['断言类型'], requests_info['期望结果'])
         except ProxyError as e:
             result = {'code': 3, 'message': '调用接口 [%s] 时发生代理异常,异常原因：%s' % (requests_info['接口名称'], e.__str__()),

@@ -9,7 +9,7 @@ import xlrd3
 import os
 from utils.excel_utils import ExcelUtils
 
-excel_file_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'tutortestcase_infos.xlsx')
+excel_file_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'testcase_infos.xlsx')
 excel_file_name = 'Sheet1'
 
 
